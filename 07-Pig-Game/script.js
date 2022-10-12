@@ -13,65 +13,13 @@ let diceImg = document.querySelector(".dice");
 const newGame = document.querySelector(".btn--new");
 const rollDice = document.querySelector(".btn--roll");
 const hold = document.querySelector(".btn--hold");
-
 let diceNumber = Math.trunc(Math.random() * 6) + 1;
 let activePlayer = document
   .querySelector(".player")
   .classList.contains("player--active");
 
-player1Score.textContent = 0;
-player2Score.textContent = 0;
 //Functions
 
-const switchPlayer = function () {
-  if (player1Sect.classList.contains("player--active")) {
-    player1Sect.classList.remove("player--active");
-    player2Sect.classList.add("player--active");
-  } else if (player2Sect.classList.contains("player--active")) {
-    player2Sect.classList.remove("player--active");
-    player1Sect.classList.add("player--active");
-  }
-};
-
-// Roll Dice
-rollDice.addEventListener("click", function () {
-  diceNumber = Math.trunc(Math.random() * 6) + 1;
-  switch (diceNumber) {
-    case 1:
-      diceImg.src = "dice-1.png";
-      break;
-    case 2:
-      diceImg.src = "dice-2.png";
-      break;
-    case 3:
-      diceImg.src = "dice-3.png";
-      break;
-    case 4:
-      diceImg.src = "dice-4.png";
-      break;
-    case 5:
-      diceImg.src = "dice-5.png";
-      break;
-    case 6:
-      diceImg.src = "dice-6.png";
-      break;
-  }
-});
-
-//Current Score ---- THIS DOESN"T DO ANYTHING WITH diceNumber! new diceNumber is stuck inside rollDice function, it doesn't follow outside the function to allow interaction with current score...
-if (diceNumber === 1) {
-  switchPlayer;
-} else {
-  if (player1Sect.classList.contains("player--active")) {
-    player1Current.textContent = player1Current + diceNumber;
-  } else if (player2Sect.classList.contains("player--active")) {
-    player2Current.textContent = player2Current + diceNumber;
-  }
-}
-
-//Hold Score
-
-//New Game
 const resetGame = function () {
   player1Score.textContent = 0;
   player2Score.textContent = 0;
@@ -81,6 +29,64 @@ const resetGame = function () {
     player2Sect.classList.remove("player--active");
     player1Sect.classList.add("player--active");
   }
+  document.querySelector(".player").classList.remove("player--winner");
+  document.querySelector("#name--0").textContent = "Player 1";
+  document.querySelector("#name--1").textContent = "Player 2";
 };
 
+const switchPlayer = function () {
+  if (player1Sect.classList.contains("player--active")) {
+    player1Sect.classList.remove("player--active");
+    player2Sect.classList.add("player--active");
+  } else if (player2Sect.classList.contains("player--active")) {
+    player2Sect.classList.remove("player--active");
+    player1Sect.classList.add("player--active");
+  }
+  player1Current.textContent = 0;
+  player2Current.textContent = 0;
+};
+
+const gameOver = function () {
+  if (Number(player1Score.textContent) >= 100) {
+    document.querySelector("#name--0").textContent = "Winner!";
+    player1Sect.classList.add("player--winner");
+  } else if (Number(player2Score.textContent) >= 100) {
+    document.querySelector("#name--1").textContent = "Winner!";
+    player2Sect.classList.add("player--winner");
+  }
+};
+
+//Start of game
+resetGame();
+
+// Roll Dice && Current Score
+rollDice.addEventListener("click", function () {
+  diceNumber = Math.trunc(Math.random() * 6) + 1;
+  diceImg.src = `dice-${diceNumber}.png`;
+  if (diceNumber === 1) {
+    switchPlayer();
+  } else {
+    if (player1Sect.classList.contains("player--active")) {
+      player1Current.textContent =
+        Number(player1Current.textContent) + diceNumber;
+    } else if (player2Sect.classList.contains("player--active")) {
+      player2Current.textContent =
+        Number(player2Current.textContent) + diceNumber;
+    }
+  }
+});
+
+//Hold Score
+hold.addEventListener("click", function () {
+  player1Score.textContent =
+    Number(player1Score.textContent) + Number(player1Current.textContent);
+  player2Score.textContent =
+    Number(player2Score.textContent) + Number(player2Current.textContent);
+  switchPlayer();
+  gameOver();
+});
+
+//Game Over
+
+//New Game
 newGame.addEventListener("click", resetGame);
